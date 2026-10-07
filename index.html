@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<header class="hero">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Flashcard revision app</title>
+</head>
+
+<body>
+    <main class="app">
+
+    <section id="home" class="page active">
+        <header class="card">
+            <h1>Flashcard revision app</h1>
+            <h2>Our solution to traditional studying</h2>
+        </header>
+        <button class="btn" id="view-btn">View flashcards</button>
+        <button class="btn secondary" id="manage-btn">Manage cards</button>
+    </section>
+
+    <section id="study" class="page">
+        <div class="deck" id="deck">
+            <div class="stack-card stack-3"></div>
+            <div class="stack-card stack-2"><p id="next-text"></p></div>
+
+            <div class="flip-card" id="flashcard" role="button" tabindex="0" aria-label="Flashcard, press to flip">
+                <div class="flip-inner">
+                    <div class="face front"><p id="front-text"></p></div>
+                    <div class="face back"><p id="back-text"></p></div>
+                </div>
+            </div>
+        </div>
+        <p id="counter"></p>
+        <div class="controls">
+            <button class="btn" id="prev">Previous</button>
+            <button class="btn" id="flip">Flip</button>
+            <button class="btn" id="next">Next</button>
+        </div>
+        <button class="btn secondary" id="back-btn">Back to home</button>
+    </section>
+
+    <section id="manage" class="page">
+        <h2 class="card">Manage cards</h2>
+
+        <div class="add-card">
+            <input id="question" placeholder="Question" maxlength="200">
+            <input id="answer" placeholder="Answer" maxlength="200">
+            <p id="error" class="error" role="alert"></p>
+            <button class="btn" id="add-btn">Add card</button>
+        </div>
+
+        <ul id="card-list" class="card-list"></ul>
+
+        <button class="btn" id="manage-back-btn">Back to home</button>
+    </section>
+
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>
