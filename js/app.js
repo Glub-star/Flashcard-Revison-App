@@ -19,7 +19,7 @@ function saveCards() {
 
 
 
-const SWIPE_MINIMUM = 50;
+const SWIPE_MINIMUM = 20;
 let startX = null;
 let startY = null
 let lastSwipeTime = 0;
@@ -201,9 +201,10 @@ flipCard.addEventListener('pointerup', (e) =>
 {
     if (startX === null) return;
     const dx = e.clientX -startX;
-    const dy = e.clientY - clientY;
+    const dy = e.clientY - startY;
+    console.log("movment on card found, ${dx} , ${dy}");
     startX = startY = null;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN) return;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MINIMUM) return;
     lastSwipeTime = Date.now()
 
     if (Math.abs(dx) > Math.abs(dy)){
@@ -230,4 +231,4 @@ themeBtn.addEventListener('click', () => {
 });
 
 
-applyTheme(loadTheme());z
+applyTheme(loadTheme());
