@@ -1,4 +1,3 @@
-// Cards
 const defaultCards = [
     { question: "What does HTML stand for?", answer: "HyperText Markup Language" },
     { question: "What does CSS stand for?", answer: "Cascading Style Sheets" },
@@ -18,12 +17,19 @@ function saveCards() {
     localStorage.setItem('cards', JSON.stringify(cards));
 }
 
+
+
+const SWIPE_MINIMUM = 50;
+let startX = null;
+let startY = null
+let lastSwipeTime = 0;
 let cards = loadCards();
 let current = 0;
 let showingAnswer = false;
 let animating = false;
 
 // Getting the element thingies
+const themeBtn = document.getElementById('theme-btn');
 const flipCard = document.getElementById('flashcard');
 const frontText = document.getElementById('front-text');
 const backText = document.getElementById('back-text');
@@ -93,7 +99,6 @@ function move(step) {
         }, 400);
 
     } else {
-        // PREVIOUS: the earlier card flies back in from the left
         deck.classList.add('no-transition');
         current = (current - 1 + cards.length) % cards.length;
         showingAnswer = false;
@@ -131,6 +136,19 @@ function renderList() {
         cardList.appendChild(li);
     });
 }
+function loadTheme() {
+    try {
+        const saved = localStorage.getItem('theme');
+        if (saved) return saved === 'light';
+    } catch {}
+    // nothing saved yet, so follow the device setting
+    return window.matchMedia('(prefers-color-scheme: light)').matches;
+}
+
+function applyTheme(light) {
+    document.body.classList.toggle('light-theme', light);
+    themeBtn.textContent = light ? 'Dark mode' : 'Light mode';
+}
 
 function addCard() {
     const question = questionInput.value.trim();
@@ -163,7 +181,6 @@ document.getElementById('manage-back-btn').addEventListener('click', () => showP
 document.getElementById('next').addEventListener('click', () => move(1));
 document.getElementById('prev').addEventListener('click', () => move(-1));
 document.getElementById('flip').addEventListener('click', flip);
-document.getElementById('flashcard').addEventListener('click', flip);
 document.getElementById('add-btn').addEventListener('click', addCard);
 flipCard.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -176,3 +193,41 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') move(1);
     if (e.key === 'ArrowLeft') move(-1);
 });
+flipCard.addEventListener('pointerdown', (e) => {
+    startX = e.clientX;
+    startY = e.clientY;
+});
+flipCard.addEventListener('pointerup', (e) =>
+{
+    if (startX === null) return;
+    const dx = e.clientX -startX;
+    const dy = e.clientY - clientY;
+    startX = startY = null;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_MIN) return;
+    lastSwipeTime = Date.now()
+
+    if (Math.abs(dx) > Math.abs(dy)){
+        move (dx < 0 ? 1 : -1);
+    }
+    else{
+        flip();
+    }
+});
+
+flipCard.addEventListener('pointercancel', () => {
+    startX = startY = null;
+});
+flipCard.addEventListener('click', () => {
+    if (Date.now() - lastSwipeTime < 400) return; // ignore the click that follows a swipe
+    flip();
+});
+themeBtn.addEventListener('click', () => {
+    const light = !document.body.classList.contains('light-theme');
+    applyTheme(light);
+    try {
+        localStorage.setItem('theme', light ? 'light' : 'dark');
+    } catch {}
+});
+
+
+applyTheme(loadTheme());z
