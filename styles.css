@@ -341,7 +341,7 @@ body {
     }
 }
 
-.theme-btn {
+.theme-btn,.themeToggle {
     position: fixed;
     top: 1rem;
     right: 1rem;
@@ -350,13 +350,7 @@ body {
     font-size: 1.1rem;
     font-weight: 600;
     padding: 1rem 1.25rem;
-    color: white;
-    background-color: var(--bg1);
-    border: none;
-    border-radius: var(--radius);
-    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }
@@ -367,16 +361,16 @@ body {
 .themeToggle {
   color: #bbb;
   width: 3em;
+  height: 3em;
+  padding: 0;
 }
-
 .st-sunMoonThemeToggleBtn {
-  position: relative;
   cursor: pointer;
 }
 
 .st-sunMoonThemeToggleBtn .themeToggleInput {
   opacity: 0;
-  width: 100%;
+  width: 10%;
   aspect-ratio: 1;
 }
 

@@ -29,7 +29,7 @@ let showingAnswer = false;
 let animating = false;
 
 // Getting the element thingies
-const themeBtn = document.getElementById('theme-btn');
+const themeBtn = document.getElementById('themeToggle');
 const flipCard = document.getElementById('flashcard');
 const frontText = document.getElementById('front-text');
 const backText = document.getElementById('back-text');
