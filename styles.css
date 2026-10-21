@@ -413,6 +413,13 @@ body {
     pointer-events: none;
 }
 
+#pack-select {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    font: inherit;
+}
+
 /*https://uiverse.io/Type-Delta/happy-mule-45*/
 
 
