@@ -55,6 +55,12 @@
         <button class="btn secondary" id="manage-btn">Manage cards</button>
     </section>
 
+    <section id="pack-picker" class="page">
+        <h2 class="card">Choose a pack</h2>
+        <ul id="pack-choices" class="card-list"></ul>
+        <button class="btn secondary" id="picker-back-btn">Back to home</button>
+    </section>
+
     <section id="study" class="page">
         <div class="deck" id="deck">
             <div class="stack-card stack-3"></div>
@@ -84,6 +90,14 @@
 
     <section id="manage" class="page">
         <h2 class="card">Manage cards</h2>
+
+        <label for="pack-select">Flashcard pack</label>
+        <select id="pack-select"></select>
+
+        <div class="add-card">
+            <input id="new-pack-name" placeholder="New pack name" maxlength="40">
+            <button class="btn secondary" id="add-pack-btn">Create pack</button>
+        </div>
 
         <div class="add-card">
             <input id="question" placeholder="Question" maxlength="200">

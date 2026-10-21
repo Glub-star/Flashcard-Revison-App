@@ -4,26 +4,72 @@ const defaultCards = [
     { question: "What keyword declares a constant in JS?", answer: "const" }
 ];
 
-function loadCards() {
+function loadPacks() {
     try {
-        const saved = JSON.parse(localStorage.getItem('cards'));
-        return Array.isArray(saved) ? saved : defaultCards;
+        const savedPacks = JSON.parse(localStorage.getItem('packs'));
+        if (Array.isArray(savedPacks)) return savedPacks;
+
+        const oldCards = JSON.parse(localStorage.getItem('cards'));
+        const cards = Array.isArray(oldCards) ? oldCards : defaultCards;
+        return [{ id: Date.now(), name: 'My Cards', cards }];
+
     } catch {
-        return defaultCards;
+        return [{ id: Date.now(), name: 'My Cards', cards: defaultCards }];
     }
 }
 
 function saveCards() {
-    localStorage.setItem('cards', JSON.stringify(cards));
+     localStorage.setItem('packs', JSON.stringify(packs));
 }
 
+function createPack(name) {
+    const pack = { id: Date.now(), name, cards: [] };
+    packs.push(pack);
+    currentPackId = pack.id;
+    saveCards();
+    renderPacks();
+    renderList();
+}
+
+function renderPacks() {
+    packSelect.innerHTML = '';
+    packs.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.name} (${p.cards.length})`;
+        packSelect.appendChild(opt);
+    });
+    packSelect.value = currentPackId;
+}
+function renderPackChoices() {
+    const list = document.getElementById('pack-choices');
+    list.innerHTML = '';
+    packs.forEach(pack => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = `${pack.name} (${pack.cards.length})`;
+        btn.addEventListener('click', () => startStudy(pack.id));
+        li.appendChild(btn);
+        list.appendChild(li);
+    });
+}
+
+function getCurrentPack() {
+    return packs.find(p => p.id === currentPackId);
+}
+
+function getCards() {
+    return getCurrentPack().cards;
+}
 
 const flipHint = document.getElementById('flip-hint');
 const SWIPE_MINIMUM = 20;
 let startX = null;
 let startY = null
 let lastSwipeTime = 0;
-let cards = loadCards();
+let packs = loadPacks();
+let currentPackId = null;
 let current = 0;
 let showingAnswer = false;
 let animating = false;
@@ -41,6 +87,8 @@ const errorMsg = document.getElementById('error');
 const cardList = document.getElementById('card-list');
 const deck = document.getElementById('deck');
 const nextText = document.getElementById('next-text');
+const packSelect = document.getElementById('pack-select');
+const newPackName = document.getElementById('new-pack-name');
 
 // mnavigation
 function showPage(id) {
@@ -50,7 +98,8 @@ function showPage(id) {
 
 // study page here
 function renderStudy() {
-    deck.classList.toggle('single', cards.length < 2);
+    const cards = getCards();
+deck.classList.toggle('single', cards.length < 2);
 
     if (cards.length === 0) {
         frontText.textContent = "No cards yet. Add some in Manage cards!";
@@ -69,7 +118,17 @@ function renderStudy() {
     counter.textContent = `${current + 1} / ${cards.length}`;
 }
 
+function startStudy(packId) {
+    currentPackId = packId;
+    current = 0;
+    showingAnswer = false;
+    showPage('study');
+    renderStudy();
+    updateProgress(current);
+}
+
 function updateProgress(index) {
+    const cards = getCards();
     if (cards.length === 0) {
         counter.textContent = "0 / 0";
         progressFill.style.width = '0%';
@@ -81,6 +140,7 @@ function updateProgress(index) {
 
 function move(step) {
     hideHint();
+    const cards = getCards();
     if (cards.length === 0 || animating) return;
 
     const newIndex = (current + step + cards.length) % cards.length;
@@ -127,6 +187,7 @@ function move(step) {
 }
 
 function flip() {
+    const cards = getCards();
     if (cards.length === 0) return;
     showingAnswer = !showingAnswer;
     renderStudy();
@@ -141,6 +202,7 @@ function hideHint() {
 }
 
 function renderList() {
+    const cards = getCards();
     cardList.innerHTML = '';
     cards.forEach((card, index) => {
         const li = document.createElement('li');
@@ -172,6 +234,7 @@ function applyTheme(light) {
 }
 
 function addCard() {
+    const cards = getCards();
     const question = questionInput.value.trim();
     const answer = answerInput.value.trim();
 
@@ -189,13 +252,13 @@ function addCard() {
 }
 
 function deleteCard(index) {
+    const cards = getCards();
     cards.splice(index, 1);
     saveCards();
     renderList();
 }
 
 // listen closely here
-document.getElementById('view-btn').addEventListener('click', () => { showPage('study'); renderStudy(); });
 document.getElementById('manage-btn').addEventListener('click', () => { showPage('manage'); renderList(); });
 document.getElementById('back-btn').addEventListener('click', () => showPage('home'));
 document.getElementById('manage-back-btn').addEventListener('click', () => showPage('home'));
@@ -250,9 +313,28 @@ themeBtn.addEventListener('click', () => {
         localStorage.setItem('theme', light ? 'light' : 'dark');
     } catch {}
 });
+packSelect.addEventListener('change', () => {
+    currentPackId = Number(packSelect.value);
+    current = 0;
+    showingAnswer = false;
+    renderList();
+});
+document.getElementById('add-pack-btn').addEventListener('click', () => {
+    const name = newPackName.value.trim();
+    if (!name) return;
+    createPack(name);
+    newPackName.value = '';
+});
+document.getElementById('view-btn').addEventListener('click', () => {
+    renderPackChoices();
+    showPage('pack-picker');
+});
+document.getElementById('picker-back-btn').addEventListener('click', () => showPage('home'));
 
 
 applyTheme(loadTheme());
 try {
     if (localStorage.getItem('hintSeen')) flipHint.classList.add('hidden');
 } catch {}
+currentPackId = packs[0].id;
+renderPacks();
