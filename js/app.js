@@ -94,6 +94,7 @@ const newPackName = document.getElementById('new-pack-name');
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    if (id === 'manage') document.getElementById('new-pack').classList.add('active');
 }
 
 // study page here
@@ -259,7 +260,11 @@ function deleteCard(index) {
 }
 
 // listen closely here
-document.getElementById('manage-btn').addEventListener('click', () => { showPage('manage'); renderList(); });
+document.getElementById('manage-btn').addEventListener('click', () => {
+    showPage('manage');
+    renderPacks();
+    renderList();
+});
 document.getElementById('back-btn').addEventListener('click', () => showPage('home'));
 document.getElementById('manage-back-btn').addEventListener('click', () => showPage('home'));
 document.getElementById('next').addEventListener('click', () => move(1));
@@ -324,6 +329,7 @@ document.getElementById('add-pack-btn').addEventListener('click', () => {
     if (!name) return;
     createPack(name);
     newPackName.value = '';
+    showPage('manage');
 });
 document.getElementById('view-btn').addEventListener('click', () => {
     renderPackChoices();

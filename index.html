@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<header class="hero">
+<head class="hero">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
@@ -46,7 +46,7 @@
   </svg>
 </label>
     <main class="app">
-    <section id="home" class="page active">
+        <section id="home" class="page active">
         <header class="card">
             <h1>Flashcard revision app</h1>
             <h2>Our solution to traditional studying</h2>
@@ -95,11 +95,6 @@
         <select id="pack-select"></select>
 
         <div class="add-card">
-            <input id="new-pack-name" placeholder="New pack name" maxlength="40">
-            <button class="btn secondary" id="add-pack-btn">Create pack</button>
-        </div>
-
-        <div class="add-card">
             <input id="question" placeholder="Question" maxlength="200">
             <input id="answer" placeholder="Answer" maxlength="200">
             <p id="error" class="error" role="alert"></p>
@@ -109,6 +104,14 @@
         <ul id="card-list" class="card-list"></ul>
 
         <button class="btn" id="manage-back-btn">Back to home</button>
+    </section>
+
+    <section id="new-pack" class="page">
+        <h2 class="card">Create a pack</h2>
+        <div class="add-card">
+            <input id="new-pack-name" placeholder="New pack name" maxlength="40">
+            <button class="btn" id="add-pack-btn">Create pack</button>
+        </div>
     </section>
 
 </main>
