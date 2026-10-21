@@ -18,7 +18,7 @@ function saveCards() {
 }
 
 
-
+const flipHint = document.getElementById('flip-hint');
 const SWIPE_MINIMUM = 20;
 let startX = null;
 let startY = null
@@ -80,6 +80,7 @@ function updateProgress(index) {
 }
 
 function move(step) {
+    hideHint();
     if (cards.length === 0 || animating) return;
 
     const newIndex = (current + step + cards.length) % cards.length;
@@ -129,9 +130,16 @@ function flip() {
     if (cards.length === 0) return;
     showingAnswer = !showingAnswer;
     renderStudy();
+    hideHint();
 }
 
 // page manegerment
+function hideHint() {
+    if (flipHint.classList.contains('hidden')) return;
+    flipHint.classList.add('hidden');
+    try { localStorage.setItem('hintSeen', '1'); } catch {}
+}
+
 function renderList() {
     cardList.innerHTML = '';
     cards.forEach((card, index) => {
@@ -245,3 +253,6 @@ themeBtn.addEventListener('click', () => {
 
 
 applyTheme(loadTheme());
+try {
+    if (localStorage.getItem('hintSeen')) flipHint.classList.add('hidden');
+} catch {}
