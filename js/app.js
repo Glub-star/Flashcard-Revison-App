@@ -34,6 +34,7 @@ const flipCard = document.getElementById('flashcard');
 const frontText = document.getElementById('front-text');
 const backText = document.getElementById('back-text');
 const counter = document.getElementById('counter');
+const progressFill = document.getElementById('progress-fill');
 const questionInput = document.getElementById('question');
 const answerInput = document.getElementById('answer');
 const errorMsg = document.getElementById('error');
@@ -68,9 +69,21 @@ function renderStudy() {
     counter.textContent = `${current + 1} / ${cards.length}`;
 }
 
+function updateProgress(index) {
+    if (cards.length === 0) {
+        counter.textContent = "0 / 0";
+        progressFill.style.width = '0%';
+        return;
+    }
+    counter.textContent = `${index + 1} / ${cards.length}`;
+    progressFill.style.width = `${((index + 1) / cards.length) * 100}%`;
+}
 
 function move(step) {
     if (cards.length === 0 || animating) return;
+
+    const newIndex = (current + step + cards.length) % cards.length;
+    updateProgress(newIndex);
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (cards.length === 1 || reduceMotion) {
