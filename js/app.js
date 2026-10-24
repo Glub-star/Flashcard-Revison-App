@@ -92,7 +92,7 @@ const newPackName = document.getElementById('new-pack-name');
 
 // mnavigation
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page, .page-2').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     if (id === 'manage') document.getElementById('new-pack').classList.add('active');
 }

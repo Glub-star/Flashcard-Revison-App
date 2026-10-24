@@ -62,7 +62,7 @@ body {
 
 /* layout */
 
-.app {
+.app, .page-2 {
     width: 100%;
     max-width: 600px;
     padding: clamp(1.25rem, 5vw, 2rem);
@@ -418,6 +418,18 @@ body {
     padding: 0.6rem;
     border-radius: 8px;
     font: inherit;
+}
+
+.page-2 {
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.page-2.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
 }
 
 /*https://uiverse.io/Type-Delta/happy-mule-45*/
