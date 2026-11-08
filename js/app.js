@@ -73,6 +73,8 @@ let currentPackId = null;
 let current = 0;
 let showingAnswer = false;
 let animating = false;
+let studyCards = [];  
+let nextRound = null;  
 
 // Getting the element thingies
 const themeBtn = document.getElementById('themeToggle');
@@ -105,8 +107,8 @@ function showPage(id) {
 
 // study page here
 function renderStudy() {
-    const cards = getCards();
-deck.classList.toggle('single', cards.length < 2);
+    const cards = studyCards;
+    deck.classList.toggle('single', cards.length < 2);
 
     if (cards.length === 0) {
         frontText.textContent = "No cards yet. Add some in Manage cards!";
@@ -118,24 +120,59 @@ deck.classList.toggle('single', cards.length < 2);
     }
     if (current >= cards.length) current = 0;
 
+    if (current === cards.length - 1 && !nextRound) prepareNextRound();
+    const upcoming = current + 1 < cards.length ? cards[current + 1] : nextRound[0];
+
     frontText.textContent = cards[current].question;
     backText.textContent = cards[current].answer;
-    nextText.textContent = cards[(current + 1) % cards.length].question;
+    nextText.textContent = upcoming.question;
     flipCard.classList.toggle('flipped', showingAnswer);
     counter.textContent = `${current + 1} / ${cards.length}`;
 }
+
+function shuffle(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+}
+
+function prepareNextRound() {
+    nextRound = shuffle(getCards());
+    const lastShown = studyCards[studyCards.length - 1];
+    if (nextRound.length > 1 && nextRound[0] === lastShown) {
+        const j = 1 + Math.floor(Math.random() * (nextRound.length - 1));
+        [nextRound[0], nextRound[j]] = [nextRound[j], nextRound[0]];
+    }
+}
+
+function stepIndex(step) {
+    const len = studyCards.length;
+    if (step > 0 && current === len - 1) {
+        if (!nextRound) prepareNextRound();
+        studyCards = nextRound;
+        nextRound = null;
+        return 0;
+    }
+    return (current + step + len) % len;
+}
+
 
 function startStudy(packId) {
     currentPackId = packId;
     current = 0;
     showingAnswer = false;
+    studyCards = shuffle(getCards());
+    nextRound = null;
     showPage('study');
     renderStudy();
     updateProgress(current);
 }
 
 function updateProgress(index) {
-    const cards = getCards();
+    const cards = studyCards
     if (cards.length === 0) {
         counter.textContent = "0 / 0";
         progressFill.style.width = '0%';
@@ -147,15 +184,14 @@ function updateProgress(index) {
 
 function move(step) {
     hideHint();
-    const cards = getCards();
-    if (cards.length === 0 || animating) return;
+    if (studyCards.length === 0 || animating) return;
 
-    const newIndex = (current + step + cards.length) % cards.length;
-    updateProgress(newIndex);
+    const len = studyCards.length;
+    updateProgress((current + step + len) % len);
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (cards.length === 1 || reduceMotion) {
-        current = (current + step + cards.length) % cards.length;
+    if (len === 1 || reduceMotion) {
+        current = stepIndex(step);
         showingAnswer = false;
         renderStudy();
         return;
@@ -171,7 +207,7 @@ function move(step) {
             deck.classList.add('no-transition');
             flipCard.classList.remove('fly-left');
             deck.classList.remove('advancing');
-            current = (current + 1) % cards.length;
+            current = stepIndex(1);
             showingAnswer = false;
             renderStudy();
             void deck.offsetWidth;            
@@ -181,7 +217,7 @@ function move(step) {
 
     } else {
         deck.classList.add('no-transition');
-        current = (current - 1 + cards.length) % cards.length;
+        current = stepIndex(-1);
         showingAnswer = false;
         renderStudy();
         flipCard.classList.add('fly-left'); 
@@ -194,8 +230,7 @@ function move(step) {
 }
 
 function flip() {
-    const cards = getCards();
-    if (cards.length === 0) return;
+    if (studyCards === 0) return;
     showingAnswer = !showingAnswer;
     renderStudy();
     hideHint();
