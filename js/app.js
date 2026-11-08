@@ -22,8 +22,8 @@ function saveCards() {
      localStorage.setItem('packs', JSON.stringify(packs));
 }
 
-function createPack(name) {
-    const pack = { id: Date.now(), name, cards: [] };
+function createPack(name, cards = []) {
+    const pack = { id: Date.now(), name, cards };
     packs.push(pack);
     currentPackId = pack.id;
     saveCards();
@@ -89,6 +89,12 @@ const deck = document.getElementById('deck');
 const nextText = document.getElementById('next-text');
 const packSelect = document.getElementById('pack-select');
 const newPackName = document.getElementById('new-pack-name');
+const importSource = document.getElementById('import-source');
+const importPackName = document.getElementById('import-pack-name');
+const importFile = document.getElementById('import-file');
+const importText = document.getElementById('import-text');
+const importStatus = document.getElementById('import-status');
+
 
 // mnavigation
 function showPage(id) {
@@ -258,6 +264,100 @@ function deleteCard(index) {
     saveCards();
     renderList();
 }
+// The external importing section
+
+//one card per line, term and definition separated by a tab
+function parseDelimited(text, delimiter = '\t') {
+    return text
+        .split(/\r?\n/)
+        .filter(line => line.trim() && !line.startsWith('#')) // Anki puts #header lines at the top
+        .map(line => {
+            const parts = line.split(delimiter);
+            return [parts[0], parts.slice(1).join(delimiter)];
+        });
+}
+
+// CSV with quote handling (commas and line breaks inside "quotes" are fine)
+function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQuotes) {
+            if (c === '"') {
+                if (text[i + 1] === '"') { field += '"'; i++; }
+                else inQuotes = false;
+            } else {
+                field += c;
+            }
+        } else if (c === '"') {
+            inQuotes = true;
+        } else if (c === ',') {
+            row.push(field);
+            field = '';
+        } else if (c === '\n' || c === '\r') {
+            if (c === '\r' && text[i + 1] === '\n') i++;
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = '';
+        } else {
+            field += c;
+        }
+    }
+    if (field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows;
+}
+
+function stripHtml(str) {
+    return str.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').trim();
+}
+
+function parseImport(text, source) {
+    const rows = source === 'csv' ? parseCSV(text) : parseDelimited(text, '\t');
+
+    const cards = [];
+    rows.forEach(([front, back]) => {
+        const question = stripHtml((front || '').trim());
+        const answer = stripHtml((back || '').trim());
+        if (question && answer) cards.push({ question, answer });
+    });
+    return { cards, skipped: rows.length - cards.length };
+}
+
+async function importPack() {
+    const name = importPackName.value.trim();
+    if (!name) {
+        importStatus.textContent = 'Give the pack a name first.';
+        return;
+    }
+
+    // use the uploaded file if there is one, otherwise the pasted text
+    let text = importText.value;
+    if (importFile.files.length > 0) {
+        text = await importFile.files[0].text();
+    }
+    if (!text.trim()) {
+        importStatus.textContent = 'Paste some text or choose a file.';
+        return;
+    }
+
+    const { cards, skipped } = parseImport(text, importSource.value);
+    if (cards.length === 0) {
+        importStatus.textContent = "Couldn't find any cards. Check you picked the right source.";
+        return;
+    }
+
+    createPack(name, cards);
+    importStatus.textContent = `Imported ${cards.length} cards` + (skipped ? ` (${skipped} lines skipped)` : '.');
+    importPackName.value = '';
+    importText.value = '';
+    importFile.value = '';
+}
+
 
 // listen closely here
 document.getElementById('manage-btn').addEventListener('click', () => {
@@ -336,6 +436,13 @@ document.getElementById('view-btn').addEventListener('click', () => {
     showPage('pack-picker');
 });
 document.getElementById('picker-back-btn').addEventListener('click', () => showPage('home'));
+document.getElementById('open-import-btn').addEventListener('click', () => showPage('external-import'));
+document.getElementById('import-back-btn').addEventListener('click', () => showPage('home'));
+document.getElementById('import-btn').addEventListener('click', importPack);
+
+
+
+
 
 
 applyTheme(loadTheme());

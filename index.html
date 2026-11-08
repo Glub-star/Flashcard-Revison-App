@@ -53,6 +53,7 @@
         </header>
         <button class="btn" id="view-btn">View flashcards</button>
         <button class="btn secondary" id="manage-btn">Manage cards</button>
+        <button class="btn" id="open-import-btn">Import packs</button>
     </section>
 
     <section id="pack-picker" class="page">
@@ -115,6 +116,35 @@
             <button class="btn" id="add-pack-btn">Create pack</button>
         </div>
     </section>
+
+<section id="external-import" class="page-2">
+    <h2 class="card">Import packs</h2>
+
+    <div class="add-card">
+        <label for="import-source">Import from</label>
+        <select id="import-source" class="select">
+            <option value="quizlet">Quizlet (text export)</option>
+            <option value="anki">Anki (plain text export)</option>
+            <option value="csv">CSV file</option>
+        </select>
+
+        <label for="import-pack-name">Pack name</label>
+        <input id="import-pack-name" type="text" placeholder="e.g. Networking basics">
+
+        <label for="import-file">Upload a file</label>
+        <input id="import-file" type="file" accept=".txt,.csv,.tsv">
+
+        <label for="import-text">...or paste it here</label>
+        <textarea id="import-text" rows="8"></textarea>
+
+        <p id="import-status" class="status"></p>
+    </div>
+
+    <div class="controls">
+        <button class="btn secondary" id="import-back-btn" type="button">Back</button>
+        <button class="btn" id="import-btn" type="button">Import</button>
+    </div>
+</section>
 
 
 <script src="js/app.js"></script>
