@@ -266,6 +266,12 @@ function deleteCard(index) {
 }
 // The external importing section
 
+function setImportStatus(message, isError = false) {
+    importStatus.textContent = message;
+    importStatus.classList.remove('error', 'success');
+    importStatus.classList.add(isError ? 'error' : 'success');
+}
+
 //one card per line, term and definition separated by a tab
 function parseDelimited(text, delimiter = '\t') {
     return text
@@ -331,7 +337,7 @@ function parseImport(text, source) {
 async function importPack() {
     const name = importPackName.value.trim();
     if (!name) {
-        importStatus.textContent = 'Give the pack a name first.';
+        setImportStatus('Give the pack a name first.', true);
         return;
     }
 
@@ -341,18 +347,18 @@ async function importPack() {
         text = await importFile.files[0].text();
     }
     if (!text.trim()) {
-        importStatus.textContent = 'Paste some text or choose a file.';
+        setImportStatus('Paste some text or choose a file.', true);
         return;
     }
 
     const { cards, skipped } = parseImport(text, importSource.value);
     if (cards.length === 0) {
-        importStatus.textContent = "Couldn't find any cards. Check you picked the right source.";
+        setImportStatus("Couldn't find any cards. Check you picked the right source.", true);
         return;
     }
 
     createPack(name, cards);
-    importStatus.textContent = `Imported ${cards.length} cards` + (skipped ? ` (${skipped} lines skipped)` : '.');
+    setImportStatus(`Imported ${cards.length} cards` + (skipped ? ` (${skipped} lines skipped)` : '.'));
     importPackName.value = '';
     importText.value = '';
     importFile.value = '';
