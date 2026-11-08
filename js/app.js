@@ -14,7 +14,7 @@ function loadPacks() {
         return [{ id: Date.now(), name: 'My Cards', cards }];
 
     } catch {
-        return [{ id: Date.now(), name: 'My Cards', cards: defaultCards }];
+        return [{ id: Date.now(), name: 'Starter pack', cards: defaultCards }];
     }
 }
 
