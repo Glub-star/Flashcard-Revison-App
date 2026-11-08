@@ -419,6 +419,13 @@ body {
     border-radius: 8px;
     font: inherit;
 }
+.select{
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 8px;
+    font: inherit;
+}
+
 
 .page-2 {
     display: none;
@@ -431,6 +438,55 @@ body {
     display: flex;
     animation: fadeIn 0.3s ease;
 }
+
+#external-import .add-card,
+#external-import .controls {
+    width: 100%;
+}
+
+.add-card label {
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 0.25rem;
+}
+
+.add-card textarea {
+    font: inherit;
+    padding: 0.75rem;
+    min-height: 140px;
+    resize: vertical;
+    border: 0.5px solid black;
+    border-radius: var(--radius);
+}
+
+.add-card input:focus-visible,
+.add-card textarea:focus-visible,
+.select:focus-visible {
+    outline: 3px solid var(--bg1);
+    outline-offset: 2px;
+}
+
+.add-card input[type="file"]::file-selector-button {
+    font: inherit;
+    font-weight: 600;
+    margin-right: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    color: white;
+    background-color: var(--bg1);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.status {
+    min-height: 1.4em;
+    text-align: center;
+    font-weight: bold;
+}
+
+.status.error   { color: #7a0000; }
+.status.success { color: #0a6b3d; }
+
 
 /*https://uiverse.io/Type-Delta/happy-mule-45*/
 
@@ -513,5 +569,3 @@ body {
     transform: scale(1);
   }
 }
-
-
